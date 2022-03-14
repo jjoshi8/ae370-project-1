@@ -1,6 +1,6 @@
 import numpy as np
 
-def f_true_baseline(u, m_satellite=3300):
+def f_true_baseline(u, m_satellite=3300, m_mars=6.39e23):
 
     """
     Returns the output dynamics vector for a given u and t.
@@ -11,9 +11,6 @@ def f_true_baseline(u, m_satellite=3300):
         Current state vector [r_x, r_y, r_z, v_x, v_y, v_z]
     m_satellite : float_like (kg)
         Mass of satellite/vehicle orbiting Mars
-
-    Constants
-    ---------
     m_mars: float_like (kg)
         Mass of Mars
 
@@ -24,12 +21,31 @@ def f_true_baseline(u, m_satellite=3300):
     
     """
 
+    # define constants
+    G = 6.67 * 10 ** -11
+    m = [m_satellite, m_mars]
+    n = len(m)
 
-    m_mars = 6.39e23
+    # initialize u_dot array
+    u_dot = np.zeros((n, 6), dtype=float)
 
-    return 0
+    # compute velocity components
+    u_dot[:, 0] = u[:, 3]
+    u_dot[:, 1] = u[:, 4]
+    u_dot[:, 2] = u[:, 5]
 
-def f_true_moons(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos=1.8):
+    # compute acceleration components
+    for i in range(n):
+        for j in range(n):
+            if j == i:
+                continue
+            u_dot[i, 3] += G * m[j] * (u[j, 0] - u[i, 0]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 4] += G * m[j] * (u[j, 1] - u[i, 1]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 5] += G * m[j] * (u[j, 2] - u[i, 2]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+
+    return u_dot
+
+def f_true_moons(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.6e15, m_deimos=1.8e15):
 
     """
     Returns the output dynamics vector for a given u and t.
@@ -54,7 +70,29 @@ def f_true_moons(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos
     
     """
 
-    return
+    # define constants
+    G = 6.67 * 10 ** -11
+    m = [m_satellite, m_mars, m_phobos, m_deimos]
+    n = len(m)
+
+    # initialize u_dot array
+    u_dot = np.zeros((n, 6), dtype=float)
+
+    # compute velocity components
+    u_dot[:, 0] = u[:, 3]
+    u_dot[:, 1] = u[:, 4]
+    u_dot[:, 2] = u[:, 5]
+
+    # compute acceleration components
+    for i in range(n):
+        for j in range(n):
+            if j == i:
+                continue
+            u_dot[i, 3] += G * m[j] * (u[j, 0] - u[i, 0]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 4] += G * m[j] * (u[j, 1] - u[i, 1]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 5] += G * m[j] * (u[j, 2] - u[i, 2]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+
+    return u_dot
 
 def f_true_sun(u, m_satellite=3300, m_mars=6.39e23, m_sun=1.9891e30):
 
@@ -79,7 +117,29 @@ def f_true_sun(u, m_satellite=3300, m_mars=6.39e23, m_sun=1.9891e30):
     
     """
 
-    return
+    # define constants
+    G = 6.67 * 10 ** -11
+    m = [m_satellite, m_mars, m_sun]
+    n = len(m)
+
+    # initialize u_dot array
+    u_dot = np.zeros((n, 6), dtype=float)
+
+    # compute velocity components
+    u_dot[:, 0] = u[:, 3]
+    u_dot[:, 1] = u[:, 4]
+    u_dot[:, 2] = u[:, 5]
+
+    # compute acceleration components
+    for i in range(n):
+        for j in range(n):
+            if j == i:
+                continue
+            u_dot[i, 3] += G * m[j] * (u[j, 0] - u[i, 0]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 4] += G * m[j] * (u[j, 1] - u[i, 1]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 5] += G * m[j] * (u[j, 2] - u[i, 2]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+
+    return u_dot
 
 def f_true_all(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos=1.8, m_sun=1.9891e30):
 
@@ -108,4 +168,26 @@ def f_true_all(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos=1
     
     """
 
-    return 
+   # define constants
+    G = 6.67 * 10 ** -11
+    m = [m_satellite, m_mars, m_phobos, m_deimos, m_sun]
+    n = len(m)
+
+    # initialize u_dot array
+    u_dot = np.zeros((n, 6), dtype=float)
+
+    # compute velocity components
+    u_dot[:, 0] = u[:, 3]
+    u_dot[:, 1] = u[:, 4]
+    u_dot[:, 2] = u[:, 5]
+
+    # compute acceleration components
+    for i in range(n):
+        for j in range(n):
+            if j == i:
+                continue
+            u_dot[i, 3] += G * m[j] * (u[j, 0] - u[i, 0]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 4] += G * m[j] * (u[j, 1] - u[i, 1]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+            u_dot[i, 5] += G * m[j] * (u[j, 2] - u[i, 2]) / (la.norm(u[j, 0:3] - u[i, 0:3]) ** 3)
+
+    return u_dot
