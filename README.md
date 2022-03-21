@@ -9,9 +9,11 @@ https://docs.google.com/document/d/1MwX35Ldj7_GYI2zqG8v2Dlz42OS6bFbg7SmPiZ8Si3s/
 * N-body problem with the satellite, Mars, Sun(?), Phobos(?), and Deimos(?)
 
 ## Possible Numerical Methods to Explore
-1. Runge-Kutta or AB3
-2. Implicit methods not discussed in class?
-3. Other explicit methods not discussed in class?
+1. Runge-Kutta
+2. Leapfrog method
+3. 4th order Yoshida integrator (based on leapfrog method)
+4. Implicit methods not discussed in class?
+5. Other explicit methods not discussed in class?
 
 ## Thoughts/Notes
 Center initial coordinates around Mars where Mars is at (0, 0, 0)
