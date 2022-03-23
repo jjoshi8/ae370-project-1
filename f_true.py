@@ -41,8 +41,8 @@ def f_true_baseline(u, m_satellite=3300, m_mars=6.39e23):
     
     """
 
-    # define constants
-    G = 6.67 * 10 ** -11
+    # define constants (convert to km)
+    G = 6.67 * (10 ** -11) * (10 ** -9)
     m = [m_satellite, m_mars]
     n = len(m)
 
@@ -53,9 +53,9 @@ def f_true_baseline(u, m_satellite=3300, m_mars=6.39e23):
     u_dot = np.zeros((max_n, 6), dtype=float)
 
     # compute velocity components
-    u_dot[:, 0] = u[:, 3]
-    u_dot[:, 1] = u[:, 4]
-    u_dot[:, 2] = u[:, 5]
+    u_dot[:n, 0] = u[:n, 3]
+    u_dot[:n, 1] = u[:n, 4]
+    u_dot[:n, 2] = u[:n, 5]
 
     # compute acceleration components
     for i in range(n):
@@ -95,8 +95,8 @@ def f_true_all(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos=1
     
     """
 
-    # define constants
-    G = 6.67 * 10 ** -11
+    # define constants (convert to km)
+    G = 6.67 * (10 ** -11) * (10 ** -9)
     m = [m_satellite, m_mars, m_phobos, m_deimos, m_sun]
     n = len(m)
 

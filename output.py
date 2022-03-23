@@ -8,7 +8,7 @@ from numerical_methods import runge_kutta
 rm = 3396.2
 
 # define initial states for bodies [km] and [km/s]
-u_0_sat = np.array([20428, 0, 0, 0.33, 0.6, 0]) 
+u_0_sat = np.array([44500, 0, 0, 0, 1.0735*0.25, 0])
 u_0_mars = np.array([0, 0, 0, 0, 0, 0])
 u_0_pho = np.array([-1.05*rm, -0.676*rm, -2.47*rm, 1, 1, 1])
 u_0_dei = np.array([5.89*rm, 3.31*rm, 1.46*rm, 1, 1, 1])
@@ -16,16 +16,21 @@ u_0_sun = np.array([10000*rm, 10000*rm, 10000*rm, 1, 1, 1])
 u_0 = np.array([u_0_sat, u_0_mars, u_0_pho, u_0_dei, u_0_sun])
 
 # define time step [s]
-delta_t = 10
+delta_t = 1
 
 # define time [s]
-T = 500000
+T = 111 * 60 * 50
 
 # retrieve states using the Yoshida method
 u_predicted, times = ivp_yoshida(u_0, T, delta_t)
+print(u_predicted[320, 0, 3:5]) # -1.41067131e+06
 
 plt.plot(u_predicted[:, 0, 0], u_predicted[:, 0, 1])
+# plt.plot(times, u_predicted[:, 0, 1])
 plt.show()
+# plt.show(block=False)
+# plt.pause(5)
+# plt.close()
 
 # retrieve final state for satellite
 u_final_sat = u_predicted[-1][0, 0:3]
