@@ -2,7 +2,7 @@ import numpy as np
 
 from f_true import f_true
 
-def ivp_yoshida(u_0, T, delta_t):
+def ivp_yoshida(u_0, T, delta_t, n):
 
     """
     Implements the predicted system evolution over time using the 4th-order Yoshida integration method.
@@ -15,6 +15,8 @@ def ivp_yoshida(u_0, T, delta_t):
         Final time T
     delta_t : float_like
         Time step size where delta_t = t_{k+1} - t_k
+    n : integer
+        # of bodies in the simulation
         
     Returns
     -------
@@ -27,19 +29,19 @@ def ivp_yoshida(u_0, T, delta_t):
 
     # initialize u and time arrays
     K = int(T / delta_t) + 1
-    n = int(u_0.shape[0])
-    N = int(u_0.shape[1])
-    u = np.zeros((K, n, N), dtype=float)
+    n_size = int(u_0.shape[0])
+    N_size = int(u_0.shape[1])
+    u = np.zeros((K, n_size, N_size), dtype=float)
     times = np.linspace(0, T, K)
 
     # loop through Yoshida integrator computations
     u[0, :] = u_0
     for k in range(1, K):
-        u[k] = yoshida(u[k-1], delta_t)
+        u[k] = yoshida(u[k-1], delta_t, n)
 
     return u, times
 
-def yoshida(u_k, delta_t):
+def yoshida(u_k, delta_t, n):
 
     """
     Implements the 4th-order Yoshida integrator to compute the predicted next state.
@@ -50,6 +52,8 @@ def yoshida(u_k, delta_t):
         Current state vector u_k 
     delta_t : float_like
         Time step size where delta_t = t_{k+1} - t_k
+    n : integer
+        # of bodies in the simulation
         
     Returns
     -------
@@ -79,7 +83,7 @@ def yoshida(u_k, delta_t):
     # compute acceleration at r_k1
     u_k1_temp = u_k
     u_k1_temp[:, 0:3] = r_k1
-    a_k1 = f_true(u_k1_temp)[:, 3:6]
+    a_k1 = f_true(u_k1_temp, n)[:, 3:6]
 
     # compute first velocity equation
     v_k1 = v_k + d1 * a_k1 * delta_t
@@ -90,7 +94,7 @@ def yoshida(u_k, delta_t):
     # compute acceleration at r_k2
     u_k2_temp = u_k
     u_k2_temp[:, 0:3] = r_k2
-    a_k2 = f_true(u_k2_temp)[:, 3:6]
+    a_k2 = f_true(u_k2_temp, n)[:, 3:6]
 
     # compute second velocity equation
     v_k2 = v_k1 + d2 * a_k2 * delta_t
@@ -101,7 +105,7 @@ def yoshida(u_k, delta_t):
     # compute acceleration at r_k3
     u_k3_temp = u_k
     u_k3_temp[:, 0:3] = r_k3
-    a_k3 = f_true(u_k3_temp)[:, 3:6]
+    a_k3 = f_true(u_k3_temp, n)[:, 3:6]
 
     # compute third velocity equation
     v_k3 = v_k2 + d3 * a_k3 * delta_t

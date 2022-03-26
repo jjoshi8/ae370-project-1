@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.linalg as la
 
-def f_true(u):
+def f_true(u, n):
 
     """
     Wrapper function that returns the true function of the desired n-body simulation.
@@ -17,6 +17,12 @@ def f_true(u):
         Vector of output dynamics for a given u and t.
 
     """
+
+    if n == 5:
+        return f_true_all(u)
+
+    if n == 2:
+        return f_true_baseline(u)
 
     return f_true_baseline(u)
 
@@ -68,7 +74,7 @@ def f_true_baseline(u, m_satellite=3300, m_mars=6.39e23):
 
     return u_dot
 
-def f_true_all(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos=1.8, m_sun=1.9891e30):
+def f_true_all(u, m_satellite=3300, m_mars=6.39e23, m_phobos=10.8e15, m_deimos=1.8e15, m_sun=1.9891e30):
 
     """
     Returns the output dynamics vector for a given u and t.
