@@ -2,7 +2,7 @@ import numpy as np
 
 from f_true import f_true
 
-def ivp_yoshida(u_0, T, delta_t, n):
+def ivp_symplectic(u_0, T, delta_t, n):
 
     """
     Implements the predicted system evolution over time using the 4th-order Yoshida integration method.
@@ -41,7 +41,7 @@ def ivp_yoshida(u_0, T, delta_t, n):
 
     return u, times
 
-def yoshida(u_k, delta_t, n):
+def symplectic(u_k, delta_t, n):
 
     """
     Implements the 4th-order Yoshida integrator to compute the predicted next state.
@@ -67,15 +67,12 @@ def yoshida(u_k, delta_t, n):
     v_k = u_k[:, 3:6]
 
     # define constants
-    w0 = - (2 ** (1/3)) / (2 - (2 ** (1/3)))
-    w1 = 1 / (2 - (2 ** (1/3)))
-    c1 = w1 / 2
-    c2 = (w0 + w1) / 2
-    c3 = (w0 + w1) / 2
-    c4 = w1 / 2
-    d1 = w1
-    d2 = w0
-    d3 = w1
+    c1 = 1
+    c2 = -2 / 3
+    c3 = 2 / 3
+    d1 = -1 / 24
+    d2 = 3 / 4
+    d3 = 7 / 24
     
     # compute first position equation
     r_k1 = r_k + c1 * v_k * delta_t
@@ -112,12 +109,51 @@ def yoshida(u_k, delta_t, n):
 
     # compute next position and velocity vectors
     u_kplus1 = np.zeros(u_k.shape, dtype=float)
-    u_kplus1[:, 0:3] = r_k3 + c4 * v_k3 * delta_t
+    u_kplus1[:, 0:3] = r_k3
     u_kplus1[:, 3:6] = v_k3
 
     return u_kplus1
 
-def runge_kutta(u_k, delta_t):
+def ivp_runge_kutta(u_0, T, delta_t, n):
+
+    """
+    Implements the predicted system evolution over time using the 4th-order Runge-Kutta method.
+
+    Parameters
+    ----------
+    u_0 : array
+        1 x N array defining the initial state vector u_0
+    T : float_like
+        Final time T
+    delta_t : float_like
+        Time step size where delta_t = t_{k+1} - t_k
+    n : integer
+        # of bodies in the simulation
+        
+    Returns
+    -------
+    u : array
+        K x N array of the predicted states where K = number of time steps
+    times : array_like
+        Length K vector containing the times t corresponding to time steps
+        
+    """
+
+    # initialize u and time arrays
+    K = int(T / delta_t) + 1
+    n_size = int(u_0.shape[0])
+    N_size = int(u_0.shape[1])
+    u = np.zeros((K, n_size, N_size), dtype=float)
+    times = np.linspace(0, T, K)
+
+    # loop through Yoshida integrator computations
+    u[0, :] = u_0
+    for k in range(1, K):
+        u[k] = runge_kutta(u[k-1], delta_t, n)
+
+    return u, times
+
+def runge_kutta(u_k, delta_t, n):
 
     """
     Implements the Runge-Kutta method to compute the predicted next state.
@@ -136,6 +172,11 @@ def runge_kutta(u_k, delta_t):
         
     """
 
-    u_kplus1 = u_k
+    y1 = delta_t * f_true(u_k, n)
+    y2 = delta_t * f_true(u_k + 0.5*y1, n)
+    y3 = delta_t * f_true(u_k + 0.5*y2, n)
+    y4 = delta_t * f_true(u_k + y3, n)
+    
+    u_kplus1 = u_k + (1 / 6) * (y1 + 2*y2 + 2*y3 + y4)
 
     return u_kplus1
