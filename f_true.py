@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.linalg as la
 
-def f_true(u, n):
+def f_true(u, n, m_phobos=10.8e15):
 
     """
     Wrapper function that returns the true function of the desired n-body simulation.
@@ -19,7 +19,7 @@ def f_true(u, n):
     """
 
     if n == 5:
-        return f_true_all(u)
+        return f_true_all(u, m_phobos=m_phobos)
 
     if n == 2:
         return f_true_baseline(u)

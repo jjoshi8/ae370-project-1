@@ -2,7 +2,7 @@ import numpy as np
 
 from f_true import f_true
 
-def ivp_symplectic(u_0, T, delta_t, n):
+def ivp_symplectic(u_0, T, delta_t, n, m_phobos=10.8e15):
 
     """
     Implements the predicted system evolution over time using the 4th-order Yoshida integration method.
@@ -37,11 +37,11 @@ def ivp_symplectic(u_0, T, delta_t, n):
     # loop through Yoshida integrator computations
     u[0, :] = u_0
     for k in range(1, K):
-        u[k] = yoshida(u[k-1], delta_t, n)
+        u[k] = symplectic(u[k-1], delta_t, n, m_phobos=m_phobos)
 
     return u, times
 
-def symplectic(u_k, delta_t, n):
+def symplectic(u_k, delta_t, n, m_phobos=10.8e15):
 
     """
     Implements the 4th-order Yoshida integrator to compute the predicted next state.
@@ -80,7 +80,7 @@ def symplectic(u_k, delta_t, n):
     # compute acceleration at r_k1
     u_k1_temp = u_k
     u_k1_temp[:, 0:3] = r_k1
-    a_k1 = f_true(u_k1_temp, n)[:, 3:6]
+    a_k1 = f_true(u_k1_temp, n, m_phobos=m_phobos)[:, 3:6]
 
     # compute first velocity equation
     v_k1 = v_k + d1 * a_k1 * delta_t
@@ -91,7 +91,7 @@ def symplectic(u_k, delta_t, n):
     # compute acceleration at r_k2
     u_k2_temp = u_k
     u_k2_temp[:, 0:3] = r_k2
-    a_k2 = f_true(u_k2_temp, n)[:, 3:6]
+    a_k2 = f_true(u_k2_temp, n, m_phobos=m_phobos)[:, 3:6]
 
     # compute second velocity equation
     v_k2 = v_k1 + d2 * a_k2 * delta_t
@@ -102,7 +102,7 @@ def symplectic(u_k, delta_t, n):
     # compute acceleration at r_k3
     u_k3_temp = u_k
     u_k3_temp[:, 0:3] = r_k3
-    a_k3 = f_true(u_k3_temp, n)[:, 3:6]
+    a_k3 = f_true(u_k3_temp, n, m_phobos=m_phobos)[:, 3:6]
 
     # compute third velocity equation
     v_k3 = v_k2 + d3 * a_k3 * delta_t
@@ -114,7 +114,7 @@ def symplectic(u_k, delta_t, n):
 
     return u_kplus1
 
-def ivp_runge_kutta(u_0, T, delta_t, n):
+def ivp_runge_kutta(u_0, T, delta_t, n, m_phobos=10.8e15):
 
     """
     Implements the predicted system evolution over time using the 4th-order Runge-Kutta method.
@@ -149,11 +149,11 @@ def ivp_runge_kutta(u_0, T, delta_t, n):
     # loop through Yoshida integrator computations
     u[0, :] = u_0
     for k in range(1, K):
-        u[k] = runge_kutta(u[k-1], delta_t, n)
+        u[k] = runge_kutta(u[k-1], delta_t, n, m_phobos=m_phobos)
 
     return u, times
 
-def runge_kutta(u_k, delta_t, n):
+def runge_kutta(u_k, delta_t, n, m_phobos=10.8e15):
 
     """
     Implements the Runge-Kutta method to compute the predicted next state.
@@ -172,10 +172,10 @@ def runge_kutta(u_k, delta_t, n):
         
     """
 
-    y1 = delta_t * f_true(u_k, n)
-    y2 = delta_t * f_true(u_k + 0.5*y1, n)
-    y3 = delta_t * f_true(u_k + 0.5*y2, n)
-    y4 = delta_t * f_true(u_k + y3, n)
+    y1 = delta_t * f_true(u_k, n, m_phobos=m_phobos)
+    y2 = delta_t * f_true(u_k + 0.5*y1, n, m_phobos=m_phobos)
+    y3 = delta_t * f_true(u_k + 0.5*y2, n, m_phobos=m_phobos)
+    y4 = delta_t * f_true(u_k + y3, n, m_phobos=m_phobos)
     
     u_kplus1 = u_k + (1 / 6) * (y1 + 2*y2 + 2*y3 + y4)
 
